@@ -1,5 +1,6 @@
 import io
 import math
+import os
 from typing import Literal
 
 import pymupdf
@@ -49,8 +50,6 @@ def func_converter_imagem_para_pdf(
             new_h = img_altura * scale
 
             x_offset, y_offset = 0, 0
-            # if new_w > new_h and new_w <= largura_a4:
-            #     y_offset = (altura_a4 - new_h) / 2
             if new_h > new_w and new_h <= altura_a4:
                 x_offset = (largura_a4 - new_w) / 2
 
@@ -111,10 +110,8 @@ def func_juntar_pdfs(
                     resultado.insert_pdf(mfile)
         resultado_bytes = resultado.tobytes()
         tamanho = len(resultado_bytes)
-        print("---- tamanho: ", tamanho)
         limite = tamanho_arquivo_limite * 1024**2
         if tamanho > limite:
-            print(f"\n---- Entrou na compressão automática... limite: {limite}")
             func_comprimir_pdf(
                 arquivo_entrada=resultado_bytes, arquivo_saida=arquivo_saida
             )
@@ -299,7 +296,6 @@ def ajusta_tamanho_imagem(caminho: str | io.BytesIO, nome_salvamento: str | Path
         caminho.seek(0)
         img = Image.open(caminho)
 
-    print(f"\n--- Iniciando ajuste para imagem ({img.size[0]}x{img.size[1]}) ---")
     for i in range(MAX_ITERACOES):
         # Sempre obtenha o tamanho atualizado da imagem no buffer
         if i == 0 and isinstance(caminho, str):
@@ -309,7 +305,6 @@ def ajusta_tamanho_imagem(caminho: str | io.BytesIO, nome_salvamento: str | Path
 
         if LIMITE_INFERIOR_BYTES <= tamanho_atual_bytes <= LIMITE_SUPERIOR_BYTES:
             img.save(nome_salvamento)
-            print(f"Imagem final salva em: {nome_salvamento}")
             return True # Sucesso
         
         # Calcular novas dimensões
@@ -349,33 +344,5 @@ def func_converter_pdf_imagem(
             buffer = io.BytesIO()
             pix_pil.save(buffer, format='PNG')
             caminho_salvamento = origem / f"{nome}_{i+1}.png"
-            sucesso = ajusta_tamanho_imagem(buffer, nome_salvamento=caminho_salvamento)
-            print(f'{sucesso = }')
+            ajusta_tamanho_imagem(buffer, nome_salvamento=caminho_salvamento)
 
-
-
-
-
-
-if __name__ == "__main__":
-    import os
-
-    os.makedirs("arquivos_teste", exist_ok=True)
-    for i in range(50):
-        caminho_imagem = f"Snake_River_(5mb).jpg"
-        arquivo_saida = f"arquivos_teste/pdf_{i}.pdf"
-        func_converter_imagem_para_pdf(caminho_imagem, arquivo_saida)
-
-    lista_caminho = []
-    for pasta, _, arquivos in os.walk("arquivos_teste"):
-        for arquivo in arquivos:
-            caminho = os.path.join(pasta, arquivo)
-            print(caminho)
-            lista_caminho.append(caminho)
-    lista_caminho = [
-        r"C:\Users\Igor Eduardo\OneDrive\Área de Trabalho\#PROG SINTECH#\manipulador_PDF\teste.pdf",
-        r"C:\Users\Igor Eduardo\OneDrive\Área de Trabalho\#PROG SINTECH#\manipulador_PDF\tewste3.pdf",
-    ]
-    func_juntar_pdfs(lista_caminho, "arquivo_teste_juntar.pdf")
-
-    # func_comprimir_pdf('arquivo_grande.pdf', 'arquivo_comprimido.pdf')

@@ -123,100 +123,78 @@ class App(tk.Tk):
     def remove_file(self):
         selected_items = self.tree.selection()
         if not selected_items:
-            print("Nenhum item selecionado para remover.")
             return
 
-        print(f"Removendo itens: {selected_items}")
         for item in selected_items:
             indice = self.tree.index(item)
             self.lista_arquivos.pop(indice)
             self.tree.delete(item)
 
-        for item in self.lista_arquivos:
-            print(item)
 
     def move_up(self):
         """Move o item selecionado uma posição para cima na lista."""
         selected_items = self.tree.selection()
-        todos_itens = self.tree.get_children()
-        print("\n----- todos_itens:", todos_itens)
-        print("\n----- selected_items:", selected_items)
+        self.tree.get_children()
 
         if not selected_items:
             return
 
         indices = sorted([self.tree.index(i) for i in selected_items])
-        print("\n----- indices:", indices)
         if indices[0] == 0:
             return
 
         lista_novos_indices = []
         for indice in indices:
-            print("\n----- indice:", indice)
             item_data = self.lista_arquivos.pop(indice)
             self.lista_arquivos.insert(indice - 1, item_data)
             new_item_id = self.tree.get_children()[indice - 1]
             lista_novos_indices.append(new_item_id)
 
-        todos_itens = self.tree.get_children()
-        print("\n----- todos_itens:", todos_itens)
-        print("\n----- lista_novos_indices:", lista_novos_indices)
+        self.tree.get_children()
 
         novos_indices = sorted([self.tree.index(i) for i in lista_novos_indices])
-        print("\n----- novos_indices:", novos_indices)
 
         self.atualizar_tree_view()
 
         for selecao in novos_indices:
             lista_itens = self.tree.get_children()
             self.tree.selection_add(lista_itens[selecao])
-            print("\n----- selecoes:", self.tree.selection())
 
     def move_down(self):
         """Move o item selecionado uma posição para baixo na lista."""
         selected_items = self.tree.selection()
-        todos_itens = self.tree.get_children()
-        print("\n----- todos_itens:", todos_itens)
-        print("\n----- selected_items:", selected_items)
+        self.tree.get_children()
 
         if not selected_items:
             return
 
         indices = sorted([self.tree.index(i) for i in selected_items])
-        print("\n----- indices:", indices)
         if indices[-1] == len(self.lista_arquivos) - 1:
             return
 
         lista_novos_indices = []
         for indice in indices:
-            print("\n----- indice:", indice)
             item_data = self.lista_arquivos.pop(indice)
             self.lista_arquivos.insert(indice + 1, item_data)
             new_item_id = self.tree.get_children()[indice + 1]
             lista_novos_indices.append(new_item_id)
 
-        todos_itens = self.tree.get_children()
-        print("\n----- todos_itens:", todos_itens)
-        print("\n----- lista_novos_indices:", lista_novos_indices)
+        self.tree.get_children()
 
         novos_indices = sorted([self.tree.index(i) for i in lista_novos_indices])
-        print("\n----- novos_indices:", novos_indices)
 
         self.atualizar_tree_view()
 
         for selecao in novos_indices:
             lista_itens = self.tree.get_children()
             self.tree.selection_add(lista_itens[selecao])
-            print("\n----- selecoes:", self.tree.selection())
 
     def clear_list(self):
-        print("Limpando toda a lista.")
         for item in self.tree.get_children():
             self.tree.delete(item)
         self.lista_arquivos.clear()
 
     def show_about(self):
-        print("Botão 'Sobre' clicado!")
         messagebox.showinfo("Sobre", "Aplicação Gerenciador de Arquivos\nVersão 6.0")
 
     def atualizar_tree_view(self):
@@ -244,7 +222,6 @@ class App(tk.Tk):
         )
         if not arquivo_saida:
             return
-        print("---- arquivo_saida: ", arquivo_saida)
 
         mensagem = f"Arquivo {os.path.split(arquivo_saida)[-1]} salvo com sucesso!"
         if not conversao:
@@ -303,25 +280,6 @@ class App(tk.Tk):
         # 4. INICIAR O VERIFICADOR (igual a antes)
         self.after(100, self._processar_fila)
 
-    # def comprimir_pdf(self):
-    #     if not self.lista_arquivos:
-    #         self.selecionar_arquivos()
-    #         return
-    #     # self.atualizar_tree_view()
-    #     for arquivo in self.lista_arquivos:
-    #         nome_arquivo, ext = os.path.splitext(arquivo)
-    #         if ext == ".pdf":
-    #             novo_nome = f"{nome_arquivo}_compressed{ext}"
-    #             print(nome_arquivo, "---", ext)
-    #             try:
-    #                 func_comprimir_pdf(arquivo, novo_nome)
-    #                 mensagem = f"Arquivo {os.path.split(arquivo)[-1]} comprimido e salvo com sucesso!"
-    #                 messagebox.showinfo("Salvamento", mensagem)
-    #             except Exception as e:
-    #                 mensagem = (
-    #                     f"Erro a comprimir o arquivo {os.path.split(arquivo)[-1]}: {e}"
-    #                 )
-    #                 messagebox.showerror("Erro", mensagem)
 
     def abrir_pdf(self):
         """Abre a caixa de diálogo e cria a janela de pop-up para visualização."""
@@ -334,7 +292,6 @@ class App(tk.Tk):
         indices = sorted([self.tree.index(i) for i in selected_items])
 
         filepath = self.lista_arquivos[indices[0]]
-        print(filepath)
 
         # Se já existir um pop-up aberto, feche-o antes de abrir um novo.
         if self.popup_window and self.popup_window.winfo_exists():
@@ -355,7 +312,6 @@ class App(tk.Tk):
         item = self.tree.item(item_id)
         item_caminho = item["values"]
         filepath = os.path.join(item_caminho[1], item_caminho[0])
-        print("filepath", filepath)
 
         if self.popup_window and self.popup_window.winfo_exists():
             self.popup_window.on_close()
