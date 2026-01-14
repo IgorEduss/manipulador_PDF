@@ -1,4 +1,4 @@
-# Manipulador PDF - Ferramenta Desktop de Automação
+# Manipulador PDF - Ferramenta Desktop
 
 > Uma suíte completa para manipulação, compressão e organização de arquivos PDF.
 
